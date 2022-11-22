@@ -2,23 +2,25 @@ package com.jsonplaceholder;
 
 import com.jsonplaceholder.apiService.JsonPlaceholderEndpoints;
 import io.restassured.RestAssured;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.log4testng.Logger;
 
 public class BaseTest {
 
     private static final Logger LOG = Logger.getLogger(BaseTest.class);
 
-    public String posts;
+    protected String posts;
+    protected String comments;
 
-    @BeforeClass
+    @BeforeTest
     public void setup() {
         RestAssured.baseURI = JsonPlaceholderEndpoints.BASE_URL;
         posts = JsonPlaceholderEndpoints.POSTS;
+        comments = JsonPlaceholderEndpoints.COMMENTS;
     }
 
-    @AfterClass
+    @AfterTest
     public void cleanUp() {
     }
 }

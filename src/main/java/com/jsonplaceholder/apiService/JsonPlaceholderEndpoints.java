@@ -1,6 +1,5 @@
 package com.jsonplaceholder.apiService;
 
-
 import com.jsonplaceholder.forms.ENDPOINTS;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

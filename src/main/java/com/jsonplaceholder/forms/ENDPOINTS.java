@@ -3,7 +3,7 @@ package com.jsonplaceholder.forms;
 public enum ENDPOINTS {
 
     POSTS("/posts/"),
-    COMMENTS("/comments/"),
+    COMMENTS("/comments"),
     ALBUMS("/albums/"),
     PHOTOS("/photos/"),
     TODOS("/todos/"),

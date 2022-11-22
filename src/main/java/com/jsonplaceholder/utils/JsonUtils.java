@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.testng.log4testng.Logger;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,9 +33,21 @@ public class JsonUtils {
         return object;
     }
 
+    public static <T> List<T> jsonArrayToObject(final JSONArray jsonArr, final Class<T> objectClass) {
+        List<T> object;
+        LOG.debug("Parsing JSON to " + objectClass);
+        try {
+            object = MAPPER.readValue(jsonArr.toString(), MAPPER.getTypeFactory().constructCollectionType(List.class, objectClass));
+            LOG.debug("Result object : " + object);
+        } catch (IOException e) {
+            String msg = "Cannot parse JSON [" + jsonArr + "] to List of objects [" + objectClass + "].";
+            LOG.error(msg);
+            throw new IllegalStateException(e);
+        }
+        return object;
+    }
 
     public static JSONObject parseJSONFile(String filename){
-
         String content = null;
         try {
             content = new String(Files.readAllBytes(Paths.get(filename)));
