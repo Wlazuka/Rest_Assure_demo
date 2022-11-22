@@ -37,7 +37,7 @@ public class PostTest extends BaseTest {
     public void GET_PostID1_2Test() {
         String id = "1";
 
-        JSONObject jsonObject = JsonUtils.parseJSONFile("src/test/resources/post1_sample.json");
+        JSONObject jsonObject = JsonUtils.parseJSONFile("src/test/resources/samples/post1_sample.json");
         Post samplePost = (Post) JsonUtils.jsonToObject(jsonObject, Post.class);
 
         LOG.info(String.format("GET post ID #%s", id));

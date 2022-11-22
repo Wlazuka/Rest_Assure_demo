@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Jsonplaceholder tests"
+       parallel="tests" thread-count="1">
+
+    <test name="Post tests">
+        <classes>
+            <class name="com.jsonplaceholder.PostTest"/>
+        </classes>
+    </test>
+    <test name="Comments tests">
+        <classes>
+            <class name="com.jsonplaceholder.CommentTest"/>
+        </classes>
+    </test>
+</suite>

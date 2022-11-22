@@ -11,6 +11,8 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <test.suite1>BasicTestSuite.xml</test.suite1>
+        <test.settings>test.properties</test.settings>
     </properties>
 
     <dependencies>
@@ -71,7 +73,7 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>3.0</version>
+            <version>5.1.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -91,10 +93,13 @@
                         </property>
                         <property>
                             <name>listener</name>
-                            <value>org.uncommons.reportng.HTMLReporter, org.uncommons.reportng.JUnitXMLReporter</value>
+                            <value>org.uncommons.reportng.HTMLReporter</value>
                         </property>
                     </properties>
-                    <workingDirectory>test-output/</workingDirectory>
+                    <reportsDirectory>${basedir}/test-output</reportsDirectory>
+                    <suiteXmlFiles>
+                        <file>${basedir}/src/test/resources/suites/${test.suite1}</file>
+                    </suiteXmlFiles>
                 </configuration>
             </plugin>
         </plugins>
