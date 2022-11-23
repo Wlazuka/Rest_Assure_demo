@@ -5,16 +5,22 @@ import com.jsonplaceholder.utils.JsonUtils;
 import io.restassured.response.Response;
 import org.json.JSONObject;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.log4testng.Logger;
-
-import java.io.File;
 
 import static io.restassured.RestAssured.given;
 
 public class PostTest extends BaseTest {
 
     private static final Logger LOG = Logger.getLogger(PostTest.class);
+
+    @DataProvider
+    public static Object[][] postsId() {
+        return new Object[][]{
+                {1},{2},{3}
+        };
+    }
 
     @Test(description = "GET /posts response with code 200")
     public void GET_PostsStatus200Test() {
@@ -79,10 +85,18 @@ public class PostTest extends BaseTest {
                 .body(jsonObject.toString())
                 .post(posts)
                 .then()
-                .assertThat()
                 .extract().response();
         Assert.assertEquals(response.path("title"), samplePost.getTitle());
         Assert.assertEquals(response.path("body"), samplePost.getBody());
         Assert.assertEquals((Integer) response.path("userId"), samplePost.getUserId());
+    }
+
+    @Test(dataProvider = "postsId")
+    public void DELETE_ExistingPostStatusTest(int postId) {
+        given()
+                .delete(posts + postId)
+                .then()
+                .assertThat()
+                .statusCode(200).log().all();
     }
 }
