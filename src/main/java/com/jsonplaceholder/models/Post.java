@@ -1,5 +1,6 @@
 package com.jsonplaceholder.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Getter
@@ -11,12 +12,12 @@ import lombok.*;
 @ToString
 public class Post {
 
-//    @JsonProperty("id")
+    @JsonProperty("id")
     private int id;
-//    @JsonProperty("title")
+    @JsonProperty("title")
     private String title;
-//    @JsonProperty("body")
+    @JsonProperty("body")
     private String body;
-//    @JsonProperty("userId")
+    @JsonProperty("userId")
     private int userId;
 }

@@ -3,6 +3,7 @@ package com.jsonplaceholder.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.testng.log4testng.Logger;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -47,13 +48,14 @@ public class JsonUtils {
         return object;
     }
 
-    public static JSONObject parseJSONFile(String filename){
+    public static JSONObject parseJSONFile(String filePath){
         String content = null;
         try {
-            content = new String(Files.readAllBytes(Paths.get(filename)));
+            content = new String(Files.readAllBytes(Paths.get(filePath)));
         } catch (IOException e) {
             e.printStackTrace();
         }
         return new JSONObject(content);
     }
+
 }

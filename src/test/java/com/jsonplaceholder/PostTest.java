@@ -2,10 +2,13 @@ package com.jsonplaceholder;
 
 import com.jsonplaceholder.models.Post;
 import com.jsonplaceholder.utils.JsonUtils;
+import io.restassured.response.Response;
 import org.json.JSONObject;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.log4testng.Logger;
+
+import java.io.File;
 
 import static io.restassured.RestAssured.given;
 
@@ -53,5 +56,33 @@ public class PostTest extends BaseTest {
         Assert.assertEquals(samplePost, post, String.format("Post with ID %s is not correct", id));
     }
 
+    @Test()
+    public void POST_NewPostStatus201Test() {
 
+                given()
+                .contentType("application/json")
+                .body("{\"userId\": 1, \"title\": \"Test title\", \"body\": \"Test body\"}")
+                .post(posts)
+                .then()
+                .assertThat()
+                .statusCode(201);
+    }
+
+    @Test()
+    public void POST_NewPostRequestTest() {
+
+        JSONObject jsonObject = JsonUtils.parseJSONFile("src/test/resources/samples/post101_sample.json");
+        Post samplePost = (Post) JsonUtils.jsonToObject(jsonObject, Post.class);
+
+        Response response = given()
+                .contentType("application/json")
+                .body(jsonObject.toString())
+                .post(posts)
+                .then()
+                .assertThat()
+                .extract().response();
+        Assert.assertEquals(response.path("title"), samplePost.getTitle());
+        Assert.assertEquals(response.path("body"), samplePost.getBody());
+        Assert.assertEquals((Integer) response.path("userId"), samplePost.getUserId());
+    }
 }
