@@ -1,4 +1,4 @@
-package com.jsonplaceholder.apiService;
+package com.jsonplaceholder.endpoints;
 
 import com.jsonplaceholder.config.PropertyManager;
 

@@ -1,6 +1,6 @@
 package com.jsonplaceholder;
 
-import com.jsonplaceholder.apiService.JsonPlaceholderEndpoints;
+import com.jsonplaceholder.endpoints.JsonPlaceholderEndpoints;
 import io.restassured.RestAssured;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;

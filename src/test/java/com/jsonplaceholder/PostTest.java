@@ -49,8 +49,9 @@ public class PostTest extends BaseTest {
                 .statusCode(404);
     }
 
-    @Test(description = "GET /posts/{id} - existing post - verify response body")
+    @Test(description = "Response as Post object, compare with sample post")
     public void GET_PostTest() {
+        LOG.info("Test: GET /posts/{id} - existing post - verify response body");
         String id = "1";
 
         JSONObject jsonObject = JsonUtils.parseJSONFile("src/test/resources/samples/post1_sample.json");
@@ -93,10 +94,11 @@ public class PostTest extends BaseTest {
 
     @Test(dataProvider = "postsId")
     public void DELETE_ExistingPostStatusTest(int postId) {
+        LOG.info("Start test: DELETE post with ID: " + postId);
         given()
                 .delete(posts + postId)
                 .then()
                 .assertThat()
-                .statusCode(200).log().all();
+                .statusCode(200);
     }
 }
