@@ -1,104 +1,146 @@
 package com.jsonplaceholder;
 
 import com.jsonplaceholder.models.Post;
+import com.jsonplaceholder.steps.PostStep;
 import com.jsonplaceholder.utils.JsonUtils;
-import io.restassured.response.Response;
+import io.qameta.allure.Description;
+import org.apache.http.HttpStatus;
 import org.json.JSONObject;
 import org.testng.Assert;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.log4testng.Logger;
-
-import static io.restassured.RestAssured.given;
+import org.testng.asserts.SoftAssert;
 
 public class PostTest extends BaseTest {
 
-    private static final Logger LOG = Logger.getLogger(PostTest.class);
+    private final PostStep postStep = new PostStep();
 
-    @DataProvider
-    public static Object[][] postsId() {
-        return new Object[][]{
-                {1},{2},{3}
-        };
+    @Test
+    @Description("GET /posts response with code 200")
+    void GET_PostsStatus200Test() {
+
     }
 
-    @Test(description = "GET /posts response with code 200")
-    public void GET_PostsStatus200Test() {
-        given()
-                .get(posts)
-                .then()
-                .assertThat()
-                .statusCode(200);
+    @Test
+    @Description("GET /posts/{id} - existing post - response with code 200")
+    void verifyIfCustomerGetsPostWithProvidedCorrectId() {
+        //GIVEN
+        int id = 1;
+
+        //WHEN
+        var response = postStep.getPostWithId(id);
+
+        //THEN
+        Assert.assertEquals(response.statusCode(), HttpStatus.SC_OK);
+
+        var post = postStep.parseResponseToObject(response);
+
+        SoftAssert softAssert = new SoftAssert();
+        softAssert.assertEquals(post.getId(), id);
+        softAssert.assertAll();
     }
 
-    @Test(description = "GET /posts/{id} - existing post - response with code 200")
-    public void GET_ExistingPostStatusTest() {
-        given()
-                .get(posts + "1")
-                .then()
-                .assertThat()
-                .statusCode(200);
+    @Test
+    @Description("GET /posts/{id} - non-existing post - response with code 404")
+    void verifyIfProvidingNonExistingPostIdGivesStatusNotFound() {
+        //GIVEN
+        int id = 10000;
+
+        //WHEN
+        var response = postStep.getPostWithId(id);
+
+        //THEN
+        Assert.assertEquals(response.statusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
-    @Test(description = "GET /posts/{id} - non-existing post - response with code 404")
-    public void GET_NonExistingPostStatusTest() {
-        given()
-                .get(posts + "10000")
-                .then()
-                .assertThat()
-                .statusCode(404);
-    }
-
-    @Test(description = "Response as Post object, compare with sample post")
-    public void GET_PostTest() {
-        LOG.info("Test: GET /posts/{id} - existing post - verify response body");
-        String id = "1";
+    @Test
+    @Description ("GET /posts/{id} - existing post - verify response body")
+    void verifyIfReceivedPostEqualsSamplePost() {
+        //GIVEN
+        int id = 1;
 
         JSONObject jsonObject = JsonUtils.parseJSONFile("src/test/resources/samples/post1_sample.json");
         Post samplePost = (Post) JsonUtils.jsonToObject(jsonObject, Post.class);
 
-        Post post =  given()
-                .get(posts + id)
-                .as(Post.class);
+        //WHEN
+        var response = postStep.getPostWithId(id);
+
+        /* Approach with parsing response to Post Object */
+        var post = postStep.parseResponseToObject(response);
+
+        //THEN
         Assert.assertEquals(samplePost, post, String.format("Post with ID %s is not correct", id));
     }
 
     @Test()
-    public void POST_NewPostStatus201Test() {
+    @Description ("POST new Post - JSON - happy path")
+    void verifyNewPostResponseBody() {
+        //GIVEN
+        String body = "{\"userId\": \"1\", \"title\": \"Test title\", \"body\": \"Test body\"}";
 
-                given()
-                .contentType("application/json")
-                .body("{\"userId\": 1, \"title\": \"Test title\", \"body\": \"Test body\"}")
-                .post(posts)
-                .then()
-                .assertThat()
-                .statusCode(201);
+        //WHEN
+        var response = postStep.postNewPost(body);
+
+        //THEN
+        Assert.assertEquals(response.statusCode(), HttpStatus.SC_CREATED);
+
+        SoftAssert softAssert = new SoftAssert();
+        /* Approach with response.path() method */
+        softAssert.assertEquals(response.path("title"), "Test title");
+        softAssert.assertEquals(response.path("body"), "Test body");
+        softAssert.assertEquals(response.path("userId"), "1");
+        softAssert.assertAll();
     }
 
     @Test()
-    public void POST_NewPostRequestTest() {
+    @Description ("POST new Post - JSONObject from file - happy path")
+    void verifyNewPostResponseBody2() {
 
+        //GIVEN
         JSONObject jsonObject = JsonUtils.parseJSONFile("src/test/resources/samples/post101_sample.json");
-        Post samplePost = (Post) JsonUtils.jsonToObject(jsonObject, Post.class);
 
-        Response response = given()
-                .contentType("application/json")
-                .body(jsonObject.toString())
-                .post(posts)
-                .then()
-                .extract().response();
-        Assert.assertEquals(response.path("title"), samplePost.getTitle());
-        Assert.assertEquals(response.path("body"), samplePost.getBody());
-        Assert.assertEquals((Integer) response.path("userId"), samplePost.getUserId());
+        //WHEN
+        var response = postStep.postNewPost(jsonObject);
+
+        //THEN
+        Assert.assertEquals(response.statusCode(), HttpStatus.SC_CREATED);
+
+        Post samplePost = (Post) JsonUtils.jsonToObject(jsonObject, Post.class);
+        SoftAssert softAssert = new SoftAssert();
+        softAssert.assertEquals(response.path("title"), samplePost.getTitle());
+        softAssert.assertEquals(response.path("body"), samplePost.getBody());
+        softAssert.assertEquals(java.util.Optional.ofNullable((Integer) response.path("userId")), samplePost.getUserId());
     }
 
-    @Test(dataProvider = "postsId")
-    public void DELETE_ExistingPostStatusTest(int postId) {
-        LOG.info("Start test: DELETE post with ID: " + postId);
-        given()
-                .delete(posts + postId)
-                .then()
-                .assertThat()
-                .statusCode(200);
+    @Test()
+    @Description ("POST new Post - Post Object - happy path")
+    void verifyNewPostResponseBody3() {
+
+        //GIVEN
+        Post newPost = new Post(1, "Test title","Test body");
+
+        //WHEN
+        var response = postStep.postNewPost(newPost);
+
+        //THEN
+        Assert.assertEquals(response.statusCode(), HttpStatus.SC_CREATED);
+
+        SoftAssert softAssert = new SoftAssert();
+        softAssert.assertEquals(response.path("title"), newPost.getTitle());
+        softAssert.assertEquals(response.path("body"), newPost.getBody());
+        softAssert.assertEquals(java.util.Optional.ofNullable((Integer) response.path("userId")), newPost.getUserId());
+    }
+
+    @Test()
+    @Description ("DELETE Post")
+    void verifyIfDeleteExistingPostReturnStatus200() {
+
+        //GIVEN
+        int id = 1;
+
+        //WHEN
+        var response = postStep.deletePostWithId(id);
+
+        //THEN
+        Assert.assertEquals(response.statusCode(), HttpStatus.SC_OK);
     }
 }

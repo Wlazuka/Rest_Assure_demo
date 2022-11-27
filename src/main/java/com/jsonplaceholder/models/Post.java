@@ -20,4 +20,11 @@ public class Post {
     private String body;
     @JsonProperty("userId")
     private int userId;
+
+    public Post(int userId, String title, String body) {
+        this.userId = userId;
+        this.title = title;
+        this.body = body;
+    }
+
 }

@@ -1,7 +1,8 @@
 package com.jsonplaceholder;
 
-import com.jsonplaceholder.endpoints.JsonPlaceholderEndpoints;
+import com.jsonplaceholder.endpoints.BaseEndpoint;
 import io.restassured.RestAssured;
+import io.restassured.RestAssured.*;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.log4testng.Logger;
@@ -10,14 +11,9 @@ public class BaseTest {
 
     private static final Logger LOG = Logger.getLogger(BaseTest.class);
 
-    protected String posts;
-    protected String comments;
-
     @BeforeTest
     public void setup() {
-        RestAssured.baseURI = JsonPlaceholderEndpoints.BASE_URL;
-        posts = JsonPlaceholderEndpoints.POSTS;
-        comments = JsonPlaceholderEndpoints.COMMENTS;
+//        RestAssured.baseURI = BaseEndpoint.BASE_URL;
     }
 
     @AfterTest

@@ -1,40 +1,54 @@
 package com.jsonplaceholder;
 
-import com.jsonplaceholder.models.Comment;
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
+import com.jsonplaceholder.steps.CommentStep;
+import io.qameta.allure.Description;
+import org.apache.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.log4testng.Logger;
 
-import java.util.List;
-
-import static io.restassured.RestAssured.given;
-
-public class CommentTest extends BaseTest{
+public class CommentTest extends BaseTest {
 
     private static final Logger LOG = Logger.getLogger(CommentTest.class);
+    private final CommentStep commentStep = new CommentStep();
 
-    @Test(description = "GET /comments?postId=1 response with code 200")
-    public void GET_CommentStatus200Test() {
-        given()
-                .param("postId", 1)
-                .get(comments)
-                .then()
-                .assertThat()
-                .statusCode(200);
+    @Test
+    @Description("GET /comments?postId=1 response with code 200")
+    void verifyIfProvidingCorrectIdValueGivesStatusOK() {
+        //GIVEN
+        int id = 1;
+
+        //WHEN
+        var response = commentStep.getCommentsWithPostId(id);
+
+        //THEN
+        Assert.assertEquals(response.statusCode(), HttpStatus.SC_OK);
     }
 
-    @Test(description = "GET /comments?postId=1 response with code 200")
-    public void GET_CommentBodyTest() {
+    @Test
+    @Description("GET /comments?postId=a response with code 400")
+    void verifyIfProvidingIncorrectIdValueGivesBadResponse() {
+        //GIVEN
+        String id = "1";
 
-        List<Comment> commentsList = RestAssured
-                .given()
-                .param("postId", 1)
-                .get(comments)
-                .then()
-                .extract()
-                .body().as(new TypeRef<>() {});
-        Assert.assertEquals(commentsList.size(), 5, "There should be 5 comments for post 1");
+        //WHEN
+        var response = commentStep.getCommentsWithPostId(id);
+
+        //THEN
+        Assert.assertEquals(response.statusCode(), HttpStatus.SC_BAD_REQUEST);
+    }
+
+    @Test
+    @Description("GET /comments?postId=1 ")
+    void verifyNumberOfCommentsForPost() {
+        //GIVEN
+        int id = 1;
+        int expectedCommentsAmount = 5;
+
+        //WHEN
+        var response = commentStep.getListOfCommentsWithPostIdAsParam(id);
+
+        //THEN
+        Assert.assertEquals(response.size(), 5, String.format("There should be %s comments for post %s", expectedCommentsAmount, id));
     }
 }
