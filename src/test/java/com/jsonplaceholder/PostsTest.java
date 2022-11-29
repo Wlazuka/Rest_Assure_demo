@@ -10,18 +10,23 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-public class PostTest extends BaseTest {
+public class PostsTest extends BaseTest {
 
     private final PostStep postStep = new PostStep();
 
     @Test
     @Description("GET /posts response with code 200")
     void GET_PostsStatus200Test() {
+        //WHEN
+        var response = postStep.getAllPosts();
+
+        //THEN
+        Assert.assertEquals(response.statusCode(), HttpStatus.SC_OK);
 
     }
 
     @Test
-    @Description("GET /posts/{id} - existing post - response with code 200")
+    @Description("GET /posts/<id> - existing post - response with code 200")
     void verifyIfCustomerGetsPostWithProvidedCorrectId() {
         //GIVEN
         int id = 1;
@@ -40,7 +45,7 @@ public class PostTest extends BaseTest {
     }
 
     @Test
-    @Description("GET /posts/{id} - non-existing post - response with code 404")
+    @Description("GET /posts/<id> - non-existing post - response with code 404")
     void verifyIfProvidingNonExistingPostIdGivesStatusNotFound() {
         //GIVEN
         int id = 10000;
@@ -53,7 +58,7 @@ public class PostTest extends BaseTest {
     }
 
     @Test
-    @Description ("GET /posts/{id} - existing post - verify response body")
+    @Description ("GET /posts/<id> - existing post - verify response body")
     void verifyIfReceivedPostEqualsSamplePost() {
         //GIVEN
         int id = 1;
@@ -108,7 +113,7 @@ public class PostTest extends BaseTest {
         SoftAssert softAssert = new SoftAssert();
         softAssert.assertEquals(response.path("title"), samplePost.getTitle());
         softAssert.assertEquals(response.path("body"), samplePost.getBody());
-        softAssert.assertEquals(java.util.Optional.ofNullable((Integer) response.path("userId")), samplePost.getUserId());
+        softAssert.assertEquals((int) response.path("userId"), samplePost.getUserId());
     }
 
     @Test()
@@ -127,8 +132,21 @@ public class PostTest extends BaseTest {
         SoftAssert softAssert = new SoftAssert();
         softAssert.assertEquals(response.path("title"), newPost.getTitle());
         softAssert.assertEquals(response.path("body"), newPost.getBody());
-        softAssert.assertEquals(java.util.Optional.ofNullable((Integer) response.path("userId")), newPost.getUserId());
+        softAssert.assertEquals((int)  response.path("userId"), newPost.getUserId());
     }
+
+    @Test()
+    @Description ("PUT ")
+    void put(){
+
+    }
+
+    @Test()
+    @Description ("PATCH ")
+    void patch(){
+
+    }
+
 
     @Test()
     @Description ("DELETE Post")

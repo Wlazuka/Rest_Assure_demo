@@ -24,4 +24,12 @@ public class PropertyManager {
             throw new RuntimeException(msg, e);
         }
     }
+
+    public static String getBaseURL() {
+        return properties.getProperty("base.url");
+    }
+
+    public static String getAllureResultsDirectory() {
+        return properties.getProperty("allure.results.directory");
+    }
 }
